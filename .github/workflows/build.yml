@@ -8,34 +8,40 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    runs-on: ubuntu-22.04
 
-      - name: Setup build environment
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3
+          sudo apt update
+          sudo apt install -y build-essential clang flex g++ gawk \
+            gcc-multilib gettext git libncurses-dev libssl-dev \
+            python3-distutils rsync unzip zlib1g-dev file wget
 
       - name: Clone OpenWrt
         run: |
-          git clone --depth 1 --branch v22.03.5 https://github.com/openwrt/openwrt.git openwrt
-          cd openwrt
+          git clone https://github.com/openwrt/openwrt -b v24.05.0 openwrt
+          cp .config openwrt/.config
+
+      - name: Download packages
+        working-directory: ./openwrt
+        run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Copy custom .config
-        run: cp .config openwrt/
-
-      - name: Build OpenWrt
+      - name: Build firmware
+        working-directory: ./openwrt
         run: |
-          cd openwrt
           make defconfig
+          make -j$(nproc) download
           make -j$(nproc)
 
-      - name: Upload firmware artifact
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: firmware-bin
-          path: openwrt/bin/
+          path: |
+            openwrt/bin/
