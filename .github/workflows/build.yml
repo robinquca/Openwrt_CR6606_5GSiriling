@@ -1,47 +1,43 @@
-name: Build OpenWrt Firmware
+name: Build OpenWrt 24.10.2 Firmware
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up build environment
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential clang flex g++ gawk \
-            gcc-multilib gettext git libncurses-dev libssl-dev \
-            python3-distutils rsync unzip zlib1g-dev file wget
+          sudo apt install -y build-essential git libncurses-dev libssl-dev \
+            python3-distutils rsync wget unzip zlib1g-dev file
 
-      - name: Clone OpenWrt
+      - name: Clone OpenWrt v24.10.2
         run: |
-          git clone https://github.com/openwrt/openwrt -b v24.05.0 openwrt
+          git clone --depth 1 --branch v24.10.2 https://github.com/openwrt/openwrt.git openwrt
           cp .config openwrt/.config
 
-      - name: Download packages
-        working-directory: ./openwrt
+      - name: Update and install feeds
+        working-directory: openwrt
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Build firmware
-        working-directory: ./openwrt
+        working-directory: openwrt
         run: |
           make defconfig
-          make -j$(nproc) download
           make -j$(nproc)
 
-      - name: Upload firmware
+      - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware-bin
-          path: |
-            openwrt/bin/
+          path: openwrt/bin/
