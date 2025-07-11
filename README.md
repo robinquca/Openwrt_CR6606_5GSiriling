@@ -1,4 +1,3 @@
-# Openwrt_CR6606_5GSiriling
 # OpenWrt for Xiaomi CR6606 + FM350-GL (PCIe-MHI)
 
 ## 使用说明
