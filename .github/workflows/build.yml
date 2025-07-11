@@ -1,0 +1,41 @@
+name: Build OpenWrt Firmware
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3
+
+      - name: Clone OpenWrt source
+        run: |
+          git clone --depth 1 --branch v22.03.5 https://github.com/openwrt/openwrt.git openwrt
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Copy custom config
+        run: cp .config openwrt/.config
+
+      - name: Build firmware
+        run: |
+          cd openwrt
+          make defconfig
+          make -j$(nproc)
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware-bin
+          path: openwrt/bin/targets/mediatek/mt7621/*.bin
