@@ -38,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware-bin
-          path: openwrt/bin/targets/mediatek/mt7621/*.bin
+          path: openwrt/bin/
