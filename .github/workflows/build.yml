@@ -20,7 +20,7 @@ jobs:
 
       - name: Clone OpenWrt
         run: |
-          git clone --depth 1 --branch v22.03.5 https://github.com/openwrt/openwrt.git openwrt
+          git clone --depth 1 --branch openwrt-21.02 https://github.com/immortalwrt/immortalwrt.git openwrt
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
