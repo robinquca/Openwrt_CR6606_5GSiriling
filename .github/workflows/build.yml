@@ -25,6 +25,14 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
+      - name: Add 5G-Modem-Support Package
+        run: |
+          cd openwrt/package
+          git clone https://github.com/Siriling/5G-Modem-Support.git
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          cd ../
+
       - name: Copy custom .config
         run: cp .config openwrt/
 
