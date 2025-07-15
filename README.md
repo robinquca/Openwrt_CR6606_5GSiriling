@@ -1,4 +1,4 @@
-# OpenWrt for Xiaomi CR6606 + FM350-GL
+# OpenWrt for FM10 CR6606 + FM350-GL
 
 ## 使用说明
 
