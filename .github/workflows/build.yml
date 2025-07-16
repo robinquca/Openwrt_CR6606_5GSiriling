@@ -54,10 +54,10 @@ jobs:
           \$(eval \$(call BuildPackage,ext-throttle))
           EOF
 
-      - name: Add speedtestpp package
+      - name: Add speedtestpp (speedtestcpp) package
         run: |
-          mkdir -p openwrt/package/speedtestpp
-          svn export https://github.com/sirpdboy/speedtestpp/trunk/openwrt/openwrt-package openwrt/package/speedtestpp     
+          cd openwrt/package
+          git clone https://github.com/oskarirauta/speedtestcpp.git speedtestpp   
 
       - name: Add 5G-Modem-Support Package
         run: |
