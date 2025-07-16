@@ -29,8 +29,6 @@ jobs:
         run: |
           cd openwrt/package
           git clone https://github.com/Siriling/5G-Modem-Support.git
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
           cd ../
 
       - name: Copy custom .config
