@@ -25,9 +25,8 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Add speedtestpp ext-throttle package manually
+      - name: Add ext-throttle package manually
         run: |
-          # ext-throttle
           mkdir -p openwrt/package/ext-throttle/files/usr/lib/throttle
           curl -L https://raw.githubusercontent.com/Siriling/5G-Modem-Support/main/rooter/0optionalapps/ext-throttle/files/usr/lib/throttle/throttle.sh -o openwrt/package/ext-throttle/files/usr/lib/throttle/throttle.sh
           chmod +x openwrt/package/ext-throttle/files/usr/lib/throttle/throttle.sh
@@ -55,8 +54,10 @@ jobs:
           \$(eval \$(call BuildPackage,ext-throttle))
           EOF
 
-          # speedtestpp
-          git clone https://github.com/sirpdboy/speedtestpp openwrt/package/speedtestpp
+      - name: Add speedtestpp package
+        run: |
+          mkdir -p openwrt/package/speedtestpp
+          svn export https://github.com/sirpdboy/speedtestpp/trunk/openwrt/openwrt-package openwrt/package/speedtestpp     
 
       - name: Add 5G-Modem-Support Package
         run: |
