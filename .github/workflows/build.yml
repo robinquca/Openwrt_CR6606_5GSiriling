@@ -25,17 +25,12 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Add speedtestpp package
+      - name: Add speedtestpp ext-throttle package manually
         run: |
-          cd openwrt/package
-          git clone https://github.com/oskarirauta/speedtestcpp.git speedtestpp
-
-      - name: Add ext-throttle package manually
-        run: |
+          # ext-throttle
           mkdir -p openwrt/package/ext-throttle/files/usr/lib/throttle
           curl -L https://raw.githubusercontent.com/Siriling/5G-Modem-Support/main/rooter/0optionalapps/ext-throttle/files/usr/lib/throttle/throttle.sh -o openwrt/package/ext-throttle/files/usr/lib/throttle/throttle.sh
           chmod +x openwrt/package/ext-throttle/files/usr/lib/throttle/throttle.sh
-
           cat << "EOF" > openwrt/package/ext-throttle/Makefile
           include \$(TOPDIR)/rules.mk
 
@@ -52,13 +47,6 @@ jobs:
             PKGARCH:=all
           endef
 
-          define Package/ext-throttle/description
-            A script for bandwidth throttle from 5G-Modem-Support.
-          endef
-
-          define Build/Compile
-          endef
-
           define Package/ext-throttle/install
             \$(INSTALL_DIR) \$(1)/usr/lib/throttle
             \$(INSTALL_BIN) ./files/usr/lib/throttle/throttle.sh \$(1)/usr/lib/throttle/throttle.sh
@@ -67,11 +55,12 @@ jobs:
           \$(eval \$(call BuildPackage,ext-throttle))
           EOF
 
+          # speedtestpp
+          git clone https://github.com/sirpdboy/speedtestpp openwrt/package/speedtestpp
+
       - name: Add 5G-Modem-Support Package
         run: |
-          cd openwrt/package
-          git clone https://github.com/Siriling/5G-Modem-Support.git
-          cd ../
+          git clone https://github.com/Siriling/5G-Modem-Support.git openwrt/package/5G-Modem-Support
 
       - name: Copy custom .config
         run: cp .config openwrt/
