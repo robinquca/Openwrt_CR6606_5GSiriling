@@ -10,13 +10,13 @@
 # Svn checkout packages from immortalwrt's repository
 
 #5G信号插件，拨号工具，驱动
-# rm -rf package/wwan
-# git clone --depth=1 https://github.com/Siriling/5G-Modem-Support package/wwan
+rm -rf package/wwan
+git clone --depth=1 https://github.com/Siriling/5G-Modem-Support package/wwan
 
 # Add iStoreOS
-# echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
-# echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
-# echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
+echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
 
 pushd customfeeds
 
