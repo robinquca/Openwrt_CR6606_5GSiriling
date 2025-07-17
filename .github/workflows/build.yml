@@ -1,13 +1,18 @@
-name: Release firmware
+ame: Build OpenWrt Firmware
 
 on:
   push:
-    tags:
-      - 'v*'
-  repository_dispatch:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
   build:
     runs-on: ubuntu-20.04
