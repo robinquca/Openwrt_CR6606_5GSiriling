@@ -1,4 +1,4 @@
-name: Build OpenWrt
+name: Build OpenWrt Firmware
 
 on:
   push:
@@ -8,58 +8,37 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Initialization Environment
-        env:
-          DEBIAN_FRONTEND: noninteractive
+      - name: Setup build environment
         run: |
-          echo -e "Total CPU cores\t: $(nproc)"
-          cat /proc/cpuinfo | grep 'model name'
-          free -h
-          uname -a
-          [ -f /proc/version ] && cat /proc/version
-          [ -f /etc/issue.net ] && cat /etc/issue.net
-          [ -f /etc/issue ] && cat /etc/issue
-          ulimit -a
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3 subversion ninja-build
 
-      - name: Download SDK
+      - name: Clone OpenWrt
         run: |
           git clone --depth 1 --branch openwrt-21.02 https://github.com/immortalwrt/immortalwrt.git openwrt
-          cd openwrt-sdk
+          cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Build
-        id: build
-        run: | 
-          cd openwrt-sdk
-          git clone https://github.com/qianlyun123/luci-app-modem.git package/luci-app-modem
-          sudo apt update && sudo apt install minify
+      - name: Add 5G-Modem-Support & missing packages
+        run: |
+          git clone https://github.com/Siriling/5G-Modem-Support.git openwrt/package/5G-Modem-Support
+          sudo apt install -y minify
 
-          ./scripts/feeds update -a && ./scripts/feeds install -a
-          echo "CONFIG_PACKAGE_luci-app-modem=y" >> .config
+      - name: Copy custom .config
+        run: cp .config openwrt/
 
+      - name: Build OpenWrt firmware
+        run: |
+          cd openwrt
           make defconfig
-          make package/luci-app-modem/compile -j$(nproc)
-
-          cd ..
-          CONFIG_TARGET="$(find openwrt-sdk/bin/ | grep luci-app-modem)"
-          CONFIG_I18N_TARGET="$(find openwrt-sdk/bin/ | grep luci-i18n-modem)"
-
-          echo 'JSON_RESPONSE<<EOF' >> $GITHUB_OUTPUT
-          echo "$CONFIG_TARGET" >> $GITHUB_OUTPUT
-          echo "$CONFIG_I18N_TARGET" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-
-          echo "status=success" >> $GITHUB_OUTPUT
-
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-        with:
-          strip_v: false
+          make -j$(nproc)
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
