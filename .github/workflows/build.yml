@@ -16,7 +16,7 @@ jobs:
       - name: Setup build environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3 subversion
+          sudo apt-get install -y build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3 subversion ninja-build
 
       - name: Clone OpenWrt
         run: |
@@ -24,14 +24,18 @@ jobs:
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          
+
       - name: Add 5G-Modem-Support Package
         run: |
           git clone https://github.com/Siriling/5G-Modem-Support.git openwrt/package/5G-Modem-Support
-          sudo apt update && sudo apt install minify
+          sudo apt update && sudo apt install -y minify
 
       - name: Copy custom .config
         run: cp .config openwrt/
+
+      - name: Patch GN Makefile to remove -Werror
+        run: |
+          sed -i '/Host\/Compile/i\define Host\/Configure\n\tsed -i "s/-Werror//g" out\/args.gn || true\nendef\n' openwrt/feeds/packages/devel/gn/Makefile
 
       - name: Build OpenWrt
         run: |
