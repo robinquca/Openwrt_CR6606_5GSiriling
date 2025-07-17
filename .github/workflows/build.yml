@@ -1,4 +1,4 @@
-ame: Build OpenWrt Firmware
+name: Build OpenWrt Firmware
 
 on:
   push:
