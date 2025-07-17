@@ -6,7 +6,7 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: stable
+  REPO_BRANCH: openwrt-21.02
   CONFIG_FILE: configs/5G.config
   DIY_SH: scripts/simplify.sh
   KMODS_IN_FIRMWARE: true
