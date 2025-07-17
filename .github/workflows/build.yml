@@ -42,6 +42,11 @@ jobs:
     - name: Update Feeds
       run: |
         cd openwrt
+        cat > feeds.conf.default <<EOF
+        src-git packages https://github.com/openwrt/packages.git
+        src-git routing https://git.openwrt.org/feed/routing.git
+        src-git telephony https://git.openwrt.org/feed/telephony.git
+        EOF
         mkdir -p customfeeds
         chmod +x ../scripts/*.sh
         ../scripts/hook-feeds.sh
