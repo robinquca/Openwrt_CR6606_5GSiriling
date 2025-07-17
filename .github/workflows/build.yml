@@ -29,8 +29,6 @@ jobs:
       - name: Add 5G-Modem-Support & missing packages
         run: |
           git clone https://github.com/Siriling/5G-Modem-Support.git openwrt/package/5G-Modem-Support
-          git clone https://github.com/Siriling/ext-throttle.git openwrt/package/ext-throttle
-          git clone https://github.com/oskarirauta/speedtestcpp.git openwrt/package/speedtestpp
           sudo apt install -y minify
 
       - name: Patch gn to fix redundant-move error
