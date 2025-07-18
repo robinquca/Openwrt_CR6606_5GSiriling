@@ -1,0 +1,40 @@
+name: Build OpenWrt For FM10
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3 subversion ninja-build
+
+      - name: Clone OpenWrt
+        run: |
+          git clone --depth 1 --branch openwrt-24.10 https://github.com/immortalwrt/immortalwrt.git openwrt
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Copy custom .config
+        run: cp .config openwrt/
+
+      - name: Build OpenWrt firmware
+        run: |
+          cd openwrt
+          make defconfig
+          make -j$(nproc)
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-bin
+          path: openwrt/bin/
